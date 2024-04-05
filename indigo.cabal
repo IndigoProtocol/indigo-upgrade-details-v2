@@ -1,0 +1,296 @@
+cabal-version: 3.0
+name:          indigo
+version:       0.1.0.0
+author:        Indigo Labs
+maintainer:    info@indigo-labs.io
+
+common lang
+  default-language: Haskell2010
+  default-extensions:
+    BangPatterns
+    DataKinds
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    ImportQualifiedPost
+    KindSignatures
+    LambdaCase
+    MultiParamTypeClasses
+    NoImplicitPrelude
+    NumericUnderscores
+    OverloadedStrings
+    ScopedTypeVariables
+    StandaloneDeriving
+    TupleSections
+    TypeApplications
+    UndecidableInstances
+
+  ghc-options:
+    -Wall -Werror -fno-ignore-interface-pragmas
+    -fno-omit-interface-pragmas -fobject-code -fno-strictness
+    -fno-specialise -fplugin-opt PlutusTx.Plugin:defer-errors
+    -- -Wunused-packages
+
+flag debug
+  description: Activates trace messages
+  default:     True
+  manual:      True
+
+flag typed
+  description: Optimize on-chain code with Plutonomy
+  default: True
+  manual: True
+
+library indigo-common
+  import:           lang
+  hs-source-dirs:   indigo-common
+  exposed-modules: 
+    Indigo.Common.Contracts.Oracle.Common
+    Indigo.Common.Data.Decimal
+
+  build-depends:
+    , base                       >=4.9 && <5
+    , aeson
+    , containers
+    , lens
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-ledger-constraints
+    , plutus-script-utils
+    , plutus-tx
+    , plutus-tx-plugin
+    , plutus-tx-spooky
+    , scientific
+    , text
+
+  if flag(debug)
+    cpp-options: -DDEBUG
+
+  if flag(typed)
+    cpp-options:
+      -DTypedSpooky
+
+library indigo-v1
+  import:           lang
+  hs-source-dirs:   indigo-v1
+  exposed-modules: 
+    Indigo.V1.Contracts.CDP.Common
+    Indigo.V1.Contracts.Collector.Common
+    Indigo.V1.Contracts.Staking.Common
+    Indigo.V1.Contracts.Governance.Poll.Common
+    Indigo.V1.Contracts.Governance.Gov.Common
+    Indigo.V1.Contracts.Governance.Execute.Common
+    Indigo.V1.Contracts.Governance.VersionRegistry.Common
+    Indigo.V1.Contracts.StabilityPool.Common
+    Indigo.V1.Contracts.Treasury.Common
+    Indigo.V1.Utils.Spooky
+
+  build-depends:
+    , indigo-common
+    , aeson
+    , base                       >=4.9 && <5
+    , containers
+    , lens
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-ledger-constraints
+    , plutus-script-utils
+    , plutus-tx
+    , plutus-tx-plugin
+    , plutus-tx-spooky
+    , scientific
+    , text
+
+  if flag(debug)
+    cpp-options: -DDEBUG
+
+  if flag(typed)
+    cpp-options:
+      -DTypedSpooky
+
+library indigo-v2
+  import:          lang
+  hs-source-dirs:  indigo-v2
+  exposed-modules:
+    Indigo.V2.Contracts.CDP.Common
+    Indigo.V2.Contracts.Collector.Common
+    Indigo.V2.Contracts.Governance.Execute.Common
+    Indigo.V2.Contracts.Governance.Gov.Common
+    Indigo.V2.Contracts.Governance.Poll.Common
+    Indigo.V2.Contracts.Governance.VersionRegistry.Common
+    Indigo.V2.Contracts.StabilityPool.Common
+    Indigo.V2.Contracts.Staking.Common
+    Indigo.V2.Contracts.Treasury.Common
+
+  build-depends:
+    , indigo-common
+    , aeson
+    , base                       >=4.9 && <5
+    , containers
+    , lens
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-ledger-constraints
+    , plutus-script-utils
+    , plutus-tx
+    , plutus-tx-plugin
+    , plutus-tx-spooky
+    , scientific
+    , text
+
+  if flag(debug)
+    cpp-options: -DDEBUG
+
+  if flag(typed)
+    cpp-options:
+      -DTypedSpooky
+
+executable upgrade-details
+  import:           lang
+  main-is:          Main.hs
+  hs-source-dirs:   upgrade-details
+  ghc-options:      -threaded -Wall
+  default-language: Haskell2010
+  build-depends:
+    , base                  >=4.9 && <5
+    , bytestring
+    , cardano-binary
+    , cardano-ledger-core
+    , indigo-common
+    , indigo-v1
+    , indigo-v2
+    , indigo-tests-common
+    , indigo-tests-v1-lib
+    , indigo-tests-v1-upgrades-lib
+    , indigo-tests-v2-lib
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-simple-model
+    , plutus-tx
+    , base16-bytestring
+
+library indigo-tests-common
+  import: lang
+  hs-source-dirs:   tests-common
+  exposed-modules:
+    Tests.Common.LoadValidatorUtil
+    Tests.Common.THUtils
+    Tests.Common.ValidatorsPath
+
+  build-depends:
+    , indigo-common
+    , base                  >=4.9 && <5
+    , mtl
+    , lens
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , plutus-script-utils
+    , tasty
+    , template-haskell
+    , th-compat
+    , directory
+    , optparse-applicative
+    , tasty-quickcheck
+
+library indigo-tests-v1-lib
+  import: lang
+  hs-source-dirs:   tests-v1-lib
+  exposed-modules:
+    Tests.V1.Lib.CDP.Script
+    Tests.V1.Lib.Collector.Script
+    Tests.V1.Lib.Governance.Script
+    Tests.V1.Lib.StabilityPool.Script
+    Tests.V1.Lib.Staking.Script
+    Tests.V1.Lib.Treasury.Script
+
+  build-depends:
+    , indigo-tests-common
+    , indigo-common
+    , indigo-v1
+    , aeson
+    , base                  >=4.9 && <5
+    , lens
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-script-utils
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , split
+
+library indigo-tests-v2-lib
+  import: lang
+  hs-source-dirs:   tests-v2-lib
+  exposed-modules:
+    Tests.V2.Lib.CDP.Script
+    Tests.V2.Lib.Collector.Script
+    Tests.V2.Lib.Governance.Script
+    Tests.V2.Lib.StabilityPool.Script
+    Tests.V2.Lib.Staking.Script
+    Tests.V2.Lib.Treasury.Script
+
+  build-depends:
+    , indigo-common
+    , indigo-tests-common
+    , indigo-v2
+    , aeson
+    , base                  >=4.9 && <5
+    , lens
+    , mtl
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-script-utils
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , split
+    , th-compat
+    , bytestring
+    , cassava
+    , time
+    , vector
+    , QuickCheck
+    , tasty-quickcheck
+
+library indigo-tests-v1-upgrades-lib
+  import: lang
+  hs-source-dirs:   tests-v1-upgrades-lib
+  exposed-modules:
+    Tests.Upgrades.V1.Lib.CDP.Script
+    Tests.Upgrades.V1.Lib.Collector.Script
+    Tests.Upgrades.V1.Lib.Governance.Script
+    Tests.Upgrades.V1.Lib.Treasury.Script
+    Tests.Upgrades.V1.Lib.StabilityPool.Script
+    Tests.Upgrades.V1.Lib.Staking.Script
+
+  build-depends:
+    , indigo-common
+    , indigo-tests-common
+    , indigo-v2
+    , aeson
+    , base                  >=4.9 && <5
+    , lens
+    , mtl
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-script-utils
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , split
+    , th-compat
+    , bytestring
+    , cassava
+    , time
+    , vector
+    , QuickCheck
+    , tasty-quickcheck
