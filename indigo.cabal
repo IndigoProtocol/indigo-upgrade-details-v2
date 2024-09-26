@@ -3,6 +3,26 @@ name:          indigo
 version:       0.1.0.0
 author:        Indigo Labs
 maintainer:    info@indigo-labs.io
+extra-source-files:
+  -- All the validator files that are frequently changed have to be listed here
+  -- because of this issue https://github.com/haskell/cabal/issues/4746
+  tests-vX-lib/data/cdp.named-debruijn
+  tests-vX-lib/data/cdp_creator.named-debruijn
+  tests-vX-lib/data/collector.named-debruijn
+  tests-vX-lib/data/gov.named-debruijn
+  tests-vX-lib/data/poll_shard.named-debruijn
+  tests-vX-lib/data/poll_manager.named-debruijn
+  tests-vX-lib/data/execute.named-debruijn
+  tests-vX-lib/data/version_registry.named-debruijn
+  tests-vX-lib/data/version_registry_policy.named-debruijn
+  tests-vX-lib/data/stability_pool.named-debruijn
+  tests-vX-lib/data/staking.named-debruijn
+  tests-vX-lib/data/treasury.named-debruijn
+
+  tests-vX-upgrades-lib/data/upgrade_cdpcreatorv2_to_cdpcreatorv21.named-debruijn
+  tests-vX-upgrades-lib/data/upgrade_cdpv2_to_cdpv21.named-debruijn
+  tests-vX-upgrades-lib/data/upgrade_govv2_to_govv21.named-debruijn
+  tests-vX-upgrades-lib/data/upgrade_treasuryv2_to_treasuryv21.named-debruijn
 
 common lang
   default-language: Haskell2010
@@ -151,6 +171,39 @@ library indigo-v2
     cpp-options:
       -DTypedSpooky
 
+library indigo-vX
+  import:          lang
+  hs-source-dirs:  indigo-vX
+  exposed-modules:
+    Indigo.VX.Contracts.CDP.Common
+    Indigo.VX.Contracts.Collector.Common
+    Indigo.VX.Contracts.Governance.Execute.Common
+    Indigo.VX.Contracts.Governance.Gov.Common
+    Indigo.VX.Contracts.Governance.Poll.Common
+    Indigo.VX.Contracts.Governance.VersionRegistry.Common
+    Indigo.VX.Contracts.StabilityPool.Common
+    Indigo.VX.Contracts.Staking.Common
+    Indigo.VX.Contracts.Treasury.Common
+
+  build-depends:
+    , indigo-common
+    , base                       >=4.9 && <5
+    , containers
+    , lens
+    , plutus-core
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-ledger-constraints
+    , plutus-script-utils
+    , plutus-tx
+    , plutus-tx-plugin
+    , plutus-tx-spooky
+    , scientific
+    , text
+
+  if flag(debug)
+    cpp-options: -DDEBUG
+
 executable upgrade-details
   import:           lang
   main-is:          Main.hs
@@ -175,13 +228,43 @@ executable upgrade-details
     , plutus-tx
     , base16-bytestring
 
+executable upgrade-details-v2
+  import:           lang
+  main-is:          Main.hs
+  hs-source-dirs:   upgrade-details-v2
+  ghc-options:      -threaded -Wall
+  default-language: Haskell2010
+  build-depends:
+    , base                  >=4.9 && <5
+    , bytestring
+    , cardano-binary
+    , cardano-ledger-core
+    , indigo-common
+    , indigo-v1
+    , indigo-v2
+    , indigo-vX
+    , indigo-tests-common
+    , indigo-tests-v1-lib
+    , indigo-tests-vX-upgrades-lib
+    , indigo-tests-v2-lib
+    , indigo-tests-vX-lib
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-simple-model
+    , plutus-tx
+    , base16-bytestring
+    , memory
+
+
 library indigo-tests-common
   import: lang
   hs-source-dirs:   tests-common
   exposed-modules:
-    Tests.Common.LoadValidatorUtil
+    Tests.Common.Contracts.AuthPolicy.Script
+    Tests.Common.Contracts.IAssetPolicy.Script
+
     Tests.Common.THUtils
-    Tests.Common.ValidatorsPath
+    Tests.Common.LoadValidatorUtil
 
   build-depends:
     , indigo-common
@@ -276,6 +359,72 @@ library indigo-tests-v1-upgrades-lib
     , indigo-common
     , indigo-tests-common
     , indigo-v2
+    , aeson
+    , base                  >=4.9 && <5
+    , lens
+    , mtl
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-script-utils
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , split
+    , th-compat
+    , bytestring
+    , cassava
+    , time
+    , vector
+    , QuickCheck
+    , tasty-quickcheck
+
+library indigo-tests-vX-lib
+  import: lang
+  hs-source-dirs:   tests-vX-lib
+  exposed-modules:
+    Tests.VX.Lib.CDP.Script
+    Tests.VX.Lib.Collector.Script
+    Tests.VX.Lib.Governance.Script
+    Tests.VX.Lib.StabilityPool.Script
+    Tests.VX.Lib.Staking.Script
+    Tests.VX.Lib.Treasury.Script
+
+  build-depends:
+    , indigo-common
+    , indigo-tests-common
+    , indigo-vX
+    , aeson
+    , base                  >=4.9 && <5
+    , lens
+    , mtl
+    , plutus-ledger
+    , plutus-ledger-api
+    , plutus-script-utils
+    , plutus-simple-model
+    , plutus-tx
+    , plutus-tx-plugin
+    , split
+    , th-compat
+    , bytestring
+    , cassava
+    , time
+    , vector
+    , QuickCheck
+    , tasty-quickcheck
+
+library indigo-tests-vX-upgrades-lib
+  import: lang
+  hs-source-dirs:   tests-vX-upgrades-lib
+  exposed-modules:
+    Tests.Upgrades.VX.Lib.CDP.Types
+    Tests.Upgrades.VX.Lib.CDP.Script
+    Tests.Upgrades.VX.Lib.Governance.Script
+    Tests.Upgrades.VX.Lib.StabilityPool.Script
+    Tests.Upgrades.VX.Lib.Treasury.Script
+
+  build-depends:
+    , indigo-tests-common
+    , indigo-vX
     , aeson
     , base                  >=4.9 && <5
     , lens

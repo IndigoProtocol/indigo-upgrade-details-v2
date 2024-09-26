@@ -3,9 +3,7 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module Indigo.Common.Contracts.Oracle.Common
-  ( oracleAssetNFTTokenName,
-    OracleAssetNFT (MkOracleAssetNFT),
-    OracleParams (OracleParams, opOwner, opBiasTime, opExpirationTime),
+  ( OracleAssetNFT (MkOracleAssetNFT),
     OracleDatum (MkOracleDatum, odPrice, odExpiration),
     OracleRedeemer (FeedPrice),
     Oracle,
@@ -21,9 +19,6 @@ import Ledger.Value qualified as Value
 import PlutusTx qualified
 import Prelude qualified as P
 
-{-# INLINEABLE oracleAssetNFTTokenName #-}
-oracleAssetNFTTokenName :: Value.TokenName
-oracleAssetNFTTokenName = Value.TokenName "oracle_asset_nft"
 
 -- | The type for the NFT that represents oracle asset (e.g. iBTC asset)
 newtype OracleAssetNFT = MkOracleAssetNFT Value.AssetClass
@@ -32,20 +27,6 @@ newtype OracleAssetNFT = MkOracleAssetNFT Value.AssetClass
 
 PlutusTx.makeLift ''OracleAssetNFT
 PlutusTx.makeIsDataIndexed ''OracleAssetNFT [('MkOracleAssetNFT, 0)]
-
-data OracleParams = OracleParams
-  { -- | Owner of the Oracle - the PubKeyHash that can
-    -- update the authentic Oracle output with NFT
-    opOwner :: Ledger.PubKeyHash,
-    -- | the time offset by which a time approximation is considered valid
-    opBiasTime :: Ledger.POSIXTime,
-    -- | the time how long the oracle is active
-    opExpirationTime :: Ledger.POSIXTime
-  }
-  deriving (Generic, P.Show, ToJSON, FromJSON, P.Eq, P.Ord)
-
-PlutusTx.makeLift ''OracleParams
-PlutusTx.makeIsDataIndexed ''OracleParams [('OracleParams, 0)]
 
 data OracleDatum = MkOracleDatum
   { -- | Price in lovelace with decimal places

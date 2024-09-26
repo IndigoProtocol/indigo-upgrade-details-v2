@@ -20,7 +20,7 @@ import Plutus.Script.Utils.V2.Typed.Scripts.Validators qualified as Validators
 import Plutus.V2.Ledger.Api qualified as V2
 import PlutusTx qualified
 import PlutusTx.Prelude
-import Tests.Common.LoadValidatorUtil (loadValidatorUsingEnvVar)
+import Tests.Common.THUtils (projectDirectory)
 
 type TreasuryScript = TypedValidator () TreasuryRedeemer
 
@@ -40,7 +40,7 @@ treasuryScript = mkTypedValidator' . untypedTreasuryScript
 compiledValidateTreasuryScript ::
   PlutusTx.CompiledCode Validators.UntypedValidator
 compiledValidateTreasuryScript =
-  $$(loadValidatorUsingEnvVar "treasury.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/treasury.named-debruijn"))
 
 treasuryScriptAddress :: TreasuryScriptParams -> V2.Address
 treasuryScriptAddress =

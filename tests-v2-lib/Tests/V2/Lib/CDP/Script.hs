@@ -28,7 +28,7 @@ import Plutus.Script.Utils.V2.Typed.Scripts.Validators (UntypedValidator)
 import Plutus.V2.Ledger.Api qualified as V2
 import PlutusTx qualified
 import PlutusTx.Prelude
-import Tests.Common.LoadValidatorUtil (loadValidatorUsingEnvVar)
+import Tests.Common.THUtils (projectDirectory)
 
 type CDPScript = TypedValidator CDPDatum CDPRedeemer
 
@@ -48,7 +48,7 @@ cdpScript = mkTypedValidator' . untypedCDPScript
 compiledValidateCDPScript ::
   PlutusTx.CompiledCode UntypedValidator
 compiledValidateCDPScript =
-  $$(loadValidatorUsingEnvVar "cdp.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/cdp.named-debruijn"))
 
 type CDPCreatorScript = TypedValidator CDPCreatorDatum CDPCreatorRedeemer
 
@@ -68,4 +68,4 @@ cdpCreatorScript = mkTypedValidator' . untypedCDPCreatorScript
 compiledValidateCDPCreatorScript ::
   PlutusTx.CompiledCode UntypedValidator
 compiledValidateCDPCreatorScript =
-  $$(loadValidatorUsingEnvVar "cdp_creator.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/cdp_creator.named-debruijn"))

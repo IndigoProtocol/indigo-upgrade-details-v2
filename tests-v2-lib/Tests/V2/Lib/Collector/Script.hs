@@ -13,7 +13,7 @@ import Plutus.Script.Utils.V2.Typed.Scripts.Validators (UntypedValidator)
 import Plutus.V2.Ledger.Api qualified as V2
 import PlutusTx qualified
 import PlutusTx.Prelude
-import Tests.Common.LoadValidatorUtil (loadValidatorUsingEnvVar)
+import Tests.Common.THUtils (projectDirectory)
 
 type CollectorScript = TypedValidator () CollectorRedeemer
 
@@ -32,4 +32,4 @@ collectorScript = mkTypedValidator' . untypedCollectorScript
 
 compiledValidateCollector :: PlutusTx.CompiledCode UntypedValidator
 compiledValidateCollector =
-  $$(loadValidatorUsingEnvVar "collector.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/collector.named-debruijn"))

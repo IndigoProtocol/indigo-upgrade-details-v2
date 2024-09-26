@@ -1,5 +1,5 @@
 # Indigo V2 Upgrade Details
-This repository is meant to be able to display how the validators and minting policies were generated for V2 of Indigo Protocol as well as the V1 -> V2 upgrade. You can locate the UPLC of the v2 contracts in the `indigo-v2/scripts` directory.
+This repository is meant to be able to display how the validators and minting policies were generated for V2 of Indigo Protocol as well as the V1 -> V2 upgrade, as well as the V2.1 validators and upgrade policies. You can locate the UPLC of the v2 contracts in the `indigo-v2/scripts` directory. You can locate the UPLC of the v2.1 contracts in the `tests-vX-lib/data` directory.
 
 ## Prerequisite
 
@@ -14,10 +14,17 @@ To get there do `nix develop` (if this doesn't work and your nix is older then d
 cabal build
 ```
 
-## Run Upgrade Details
+## Run Upgrade Details for v1 -> v2 upgrade
 
 ``` sh
 cabal run upgrade-details
+```
+
+
+## Run Upgrade Details for v2 -> v2.1 upgrade
+
+``` sh
+cabal run upgrade-details-v2
 ```
 
 ## Publishing named-debrujin from UPLC

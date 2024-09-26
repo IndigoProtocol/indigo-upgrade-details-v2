@@ -19,7 +19,7 @@ import Plutus.Script.Utils.V2.Typed.Scripts.Validators (UntypedValidator)
 import Plutus.V2.Ledger.Api qualified as V2
 import PlutusTx qualified
 import PlutusTx.Prelude
-import Tests.Common.LoadValidatorUtil (loadValidatorUsingEnvVar)
+import Tests.Common.THUtils (projectDirectory)
 
 type StabilityPoolScript = TypedValidator StabilityDatum StabilityPoolRedeemer
 
@@ -38,4 +38,4 @@ stabilityPoolScript = mkTypedValidator' . untypedStabilityPoolScript
 
 compiledValidateStabilityPool :: PlutusTx.CompiledCode UntypedValidator
 compiledValidateStabilityPool =
-  $$(loadValidatorUsingEnvVar "stability_pool.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/stability_pool.named-debruijn"))

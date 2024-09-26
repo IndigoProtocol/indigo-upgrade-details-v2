@@ -57,7 +57,7 @@ import Plutus.Script.Utils.V2.Typed.Scripts.Validators (UntypedValidator)
 import Plutus.V2.Ledger.Api qualified as V2
 import PlutusTx qualified
 import PlutusTx.Prelude
-import Tests.Common.LoadValidatorUtil (loadPolicyUsingEnvVar, loadValidatorUsingEnvVar)
+import Tests.Common.THUtils (projectDirectory)
 
 type GovScript = TypedValidator GovDatum GovRedeemer
 
@@ -77,7 +77,7 @@ govScript = mkTypedValidator' . untypedGovScript
 compiledValidateGov ::
   PlutusTx.CompiledCode UntypedValidator
 compiledValidateGov =
-  $$(loadValidatorUsingEnvVar "gov.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/gov.named-debruijn"))
 
 type PollShardScript = TypedValidator PollShard PollRedeemer
 
@@ -98,7 +98,7 @@ pollShardScript = mkTypedValidator' . untypedPollShardScript
 
 compiledValidatePollShard :: PlutusTx.CompiledCode UntypedValidator
 compiledValidatePollShard =
-  $$(loadValidatorUsingEnvVar "poll_shard.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/poll_shard.named-debruijn"))
 
 pollManagerValidatorHash :: PollManagerParams -> Ledger.ValidatorHash
 pollManagerValidatorHash params = Scripts.validatorHash $ untypedPollManagerScript params
@@ -116,7 +116,7 @@ pollManagerScript = mkTypedValidator' . untypedPollManagerScript
 compiledValidatePollManager ::
   PlutusTx.CompiledCode UntypedValidator
 compiledValidatePollManager =
-  $$(loadValidatorUsingEnvVar "poll_manager.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/poll_manager.named-debruijn"))
 
 pollManagerAddress :: PollManagerParams -> Ledger.Address
 pollManagerAddress =
@@ -140,12 +140,12 @@ executeScript = mkTypedValidator' . untypedExecuteScript
 compiledValidateExecute ::
   PlutusTx.CompiledCode UntypedValidator
 compiledValidateExecute =
-  $$(loadValidatorUsingEnvVar "execute.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/execute.named-debruijn"))
 
 type VersionRegistryScript = TypedValidator VersionRecord VersionRecordRedeemer
 
 versionRegistryValidatorHash :: Ledger.ValidatorHash
-versionRegistryValidatorHash = Scripts.validatorHash $ untypedVersionRegistryScript
+versionRegistryValidatorHash = Scripts.validatorHash untypedVersionRegistryScript
 
 untypedVersionRegistryScript :: V2.Validator
 untypedVersionRegistryScript =
@@ -157,7 +157,7 @@ versionRegistryScript = mkTypedValidator' untypedVersionRegistryScript
 compiledVersionRegistryScript ::
   PlutusTx.CompiledCode UntypedValidator
 compiledVersionRegistryScript =
-  $$(loadValidatorUsingEnvVar "version_registry.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/version_registry.named-debruijn"))
 
 versionRecordPolicy ::
   VersionRecordParams -> TypedPolicy VersionRecordMintingPolicyRedeemer
@@ -170,7 +170,7 @@ versionRecordPolicy params =
 
 compiledVersionRecordPolicy :: PlutusTx.CompiledCode UntypedMintingPolicy
 compiledVersionRecordPolicy =
-  $$(loadPolicyUsingEnvVar "version_registry_policy.named-debruijn")
+  $$(PlutusTx.loadFromFile (projectDirectory <> "/tests-v2-lib/data/version_registry_policy.named-debruijn"))
 
 versionRecordSymbol :: VersionRecordParams -> V2.CurrencySymbol
 versionRecordSymbol = scriptCurrencySymbol . versionRecordPolicy
